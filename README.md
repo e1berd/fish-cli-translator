@@ -1,4 +1,4 @@
-# translate - Fish Shell function for Google Translate (unofficial) with caching
+# Translatish - Fish Shell function for Google Translate (unofficial) with caching
 
 A simple, fast command-line translator for the Fish shell that uses Google's free Translate API (via the unofficial `translate.googleapis.com` endpoint) and caches results locally to avoid repeated requests and work faster/offline for repeated phrases.
 
