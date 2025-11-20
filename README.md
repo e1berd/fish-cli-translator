@@ -1,69 +1,78 @@
-# Fish Shell Translator
+# translate - Fish Shell function for Google Translate (unofficial) with caching
 
-A simple and elegant fish shell function for quick text translation using Google Translate API.
-
-## Features
-
-- 🌐 Translate between any language pairs supported by Google Translate
-- ⚡ Fast and lightweight - uses direct API calls
-- 🎯 Simple and intuitive syntax
-- 🛡️ URL-encodes text automatically for safe transmission
-- 📋 Clean output using jq for JSON parsing
-
-## Requirements
-
-- `fish` shell
-- `curl` - for making HTTP requests
-- `jq` - for JSON parsing
+A simple, fast command-line translator for the Fish shell that uses Google's free Translate API (via the unofficial `translate.googleapis.com` endpoint) and caches results locally to avoid repeated requests and work faster/offline for repeated phrases.
 
 ## Installation
 
-1. Save the function to your fish config file (`~/.config/fish/config.fish`) or as a separate function file.
+1. Save the function to your Fish configuration or functions directory:
 
-2. The function code:
 ```fish
-function translate --argument src_dst text
-    if not string match -q "*:*" $src_dst
-        echo "Usage: translate ru:en \"текст\""
-        return 1
-    end
-    set src (string split ":" $src_dst)[1]
-    set dst (string split ":" $src_dst)[2]
-    set encoded_text (string escape --style=url $text)
-    set response (curl -s "https://translate.googleapis.com/translate_a/single?client=gtx&sl=$src&tl=$dst&dt=t&q=$encoded_text")
-    echo $response | jq -r '.[0][0][0]'
-end
+mkdir -p ~/.config/fish/functions
+curl -o ~/.config/fish/functions/translate.fish https://raw.githubusercontent.com/e1berd/fish-cli-translator/main/translate.fish
+# or just copy-paste the code into the file
+```
+2. Reload your shell or run:
+```fish
+source ~/.config/fish/functions/translate.fish
+```
+## Dependencies (must be installed):
+
+- `curl`
+- `jq` (for parsing JSON and managing cache)
+
+On macOS:
+```fish
+brew install curl jq
+```
+On Linux (Debian/Ubuntu):
+```fish
+sudo apt install curl jq
 ```
 
 ## Usage
 ```fish
-translate SOURCE_LANG:TARGET_LANG "text to translate"
+translate SRC:DST [text to translate]
 ```
+- SRC – source language code (e.g., en, ru, de, ja). Use auto for auto-detection.
+- DST – target language code.
+- If no text is given as arguments, the function reads from stdin (useful with pipes).
 
 ## Examples
 ```fish
-# Russian to English
-translate ru:en "Привет, мир!"
+translate en:ru "Hello world"
+# → Привет, мир
 
-# English to Spanish
-translate en:es "Hello, world!"
+translate ru:en "Привет, как дела?"
+# → Hi, how are you?
 
-# English to French
-translate en:fr "How are you today?"
+echo "Good morning" | translate en:fr
+# → Bonjour
 
-# Spanish to German
-translate es:de "Buenos días"
+translate auto:es "Cómo estás"
+# → How are you
 ```
 
-## Notes
-- The function uses Google's public translate API
-- Text is automatically URL-encoded for safety
-- Requires internet connection
-- Rate limits may apply with extensive use
+## Piping multi-line text
+```fish
+cat myfile.txt | translate en:de
+```
 
-## Troubleshooting
-If you get an error, ensure:
-- You have `curl` and `jq` installed
-- The language code format is correct (source:target)
-- You're connected to the internet
-- The text is properly quoted
+## Repeated translations (cached)
+The second and subsequent calls with the exact same language pair and text are instant and work even offline because the result is stored in `~/.cache/translate_cache.json`.
+
+## Cache
+- Location: `~/.cache/translate_cache.json`
+- Format: simple JSON object where keys are URL-escaped `"SRC:DST|text"` and values are translated strings.
+- The cache grows indefinitely. If you want to clean it:
+```fish
+rm ~/.cache/translate_cache.json
+# it will be recreated automatically on next use
+```
+
+## Notes / Limitations
+- This uses Google's unofficial free API. It may stop working or be rate-limited at any time.
+- No advanced features (detected language output, multiple translations, etc.) – only the first translation result is returned.
+- No color output or pretty-printing – plain text result.
+
+## License
+MIT – feel free to modify and redistribute.
