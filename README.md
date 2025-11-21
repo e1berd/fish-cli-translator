@@ -1,11 +1,10 @@
-# Translatish - Fish Shell function for Google Translate API with caching
+# Translatish - Shell function for Google Translate API with caching
 
-A simple, fast command-line translator for the Fish shell that uses Google's free Translate API (via the unofficial `translate.googleapis.com` endpoint) and caches results locally to avoid repeated requests and work faster/offline for repeated phrases.
+A lightweight command‑line translator function compatible with bash, zsh, and fish, powered by Google’s unofficial Translate API (translate.googleapis.com).
 
 ## Installation
-
+### Fish
 1. Save the function to your Fish configuration or functions directory:
-
 ```fish
 mkdir -p ~/.config/fish/functions  &
   curl -o ~/.config/fish/functions/translate.fish https://raw.githubusercontent.com/e1berd/
@@ -17,6 +16,10 @@ translatish/main/translate.fish
 ```fish
 source ~/.config/fish/functions/translate.fish
 ```
+
+### Zsh / Bash
+TODO: add the installation text for zsh / bash
+
 ## Dependencies (must be installed):
 
 - `curl`
